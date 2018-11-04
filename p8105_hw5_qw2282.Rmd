@@ -13,6 +13,22 @@ library(tidyverse)
 
 Read all file names.
 ```{r}
-list.files("./data")
+data_longitudinal = data_frame(filename = list.files("./data")) %>%
+  mutate(file_contents = map(filename, ~read_csv(file.path("./data", . )))) %>% 
+  unnest() %>% 
+  separate(filename, into = c("group", "subject"), sep = "_") %>% 
+  separate(subject, into = c("subject", "delete")) %>% 
+  select(-delete) %>% 
+  janitor::clean_names() %>% 
+  mutate(subject = factor(subject), group = factor(group)) %>% 
+  gather(key = week, value = number, week_1:week_8) %>% 
+  separate(week, into = c("delete", "week"), sep = "_") %>% 
+  select(-delete) %>% 
+  mutate(week = as.numeric(week))
+
+
+ggplot(data_longitudinal, aes(x = week, y = number, group = (group:subject), color = group)) +
+  geom_point() +
+  geom_line()
 ```
 
