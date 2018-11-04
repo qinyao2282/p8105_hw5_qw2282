@@ -11,7 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-Read all file names.
+###Problem 1
+
 ```{r}
 data_longitudinal = data_frame(filename = list.files("./data")) %>%
   mutate(file_contents = map(filename, ~read_csv(file.path("./data", . )))) %>% 
@@ -30,5 +31,37 @@ data_longitudinal = data_frame(filename = list.files("./data")) %>%
 ggplot(data_longitudinal, aes(x = week, y = number, group = (group:subject), color = group)) +
   geom_point() +
   geom_line()
+```
+
+###Problem 2
+
+```{r}
+data_homicide = read.csv(file = "./data/homicide-data.csv") %>% 
+  mutate(city_state = str_c(city,", ", state)) %>% 
+  select(-city, -state) 
+
+
+check_arrest = function(disposition) {
+  
+  if (disposition == "Closed by arrest") {
+     "arrested"
+  } else  {
+     "unarrested"
+  }
+}
+
+
+total_number_homicide = 
+  data_homicide %>% 
+  mutate(arrest_stage = as.character(map(disposition, check_arrest))) %>% 
+  
+  group_by(city_state, arrest_stage) %>% 
+  summarize(total_number = n()) %>% 
+  spread(key = arrest_stage, value = total_number) %>% 
+  mutate(total_number = arrested + unarrested)
+  
+  
+
+
 ```
 
