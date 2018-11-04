@@ -15,6 +15,7 @@ library(tidyverse)
 
 ```{r}
 data_longitudinal = data_frame(filename = list.files("./data")) %>%
+  filter(!filename == "homicide-data.csv") %>% 
   mutate(file_contents = map(filename, ~read_csv(file.path("./data", . )))) %>% 
   unnest() %>% 
   separate(filename, into = c("group", "subject"), sep = "_") %>% 
@@ -58,10 +59,37 @@ total_number_homicide =
   group_by(city_state, arrest_stage) %>% 
   summarize(total_number = n()) %>% 
   spread(key = arrest_stage, value = total_number) %>% 
-  mutate(total_number = arrested + unarrested)
+  replace(is.na(.), 0) %>% 
+  mutate(total_number = arrested + unarrested) 
   
+
+baltimore_data = total_number_homicide %>% 
+  filter(city_state == "Baltimore, MD") 
+
+output = prop.test(baltimore_data$unarrested, baltimore_data$total_number) %>% 
+  broom::tidy() %>% 
+  select(estimate, conf.low, conf.high)
+
+
   
 
 
+```
+
+```{r}
+calculate_proportion = function(data) {
+  output = prop.test(data$unarrested, data$total_number) %>% 
+  broom::tidy() %>% 
+  select(estimate, conf.low, conf.high)
+  
+  output
+}
+
+
+
+total_number_homicide %>% 
+  nest(city_state, arrested:total_number) %>% 
+  mutate(proportion = map(data, calculate_proportion)) %>% 
+  unnest()
 ```
 
