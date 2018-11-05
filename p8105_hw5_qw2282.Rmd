@@ -87,9 +87,23 @@ calculate_proportion = function(data) {
 
 
 
-total_number_homicide %>% 
+estimation_for_city = total_number_homicide %>% 
   nest(city_state, arrested:total_number) %>% 
   mutate(proportion = map(data, calculate_proportion)) %>% 
   unnest()
 ```
+
+Make the plot
+
+```{r}
+
+estimation_for_city %>% 
+  mutate(city_state = forcats::fct_reorder(factor(city_state), unarrested/total_number)) %>% 
+  ggplot(aes(x = city_state, y = unarrested/total_number)) +
+  geom_point()
+
+```
+
+
+
 
