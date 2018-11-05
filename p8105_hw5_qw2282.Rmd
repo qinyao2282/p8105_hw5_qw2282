@@ -31,7 +31,13 @@ data_longitudinal = data_frame(filename = list.files("./data")) %>%
 
 ggplot(data_longitudinal, aes(x = week, y = number, group = (group:subject), color = group)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(
+    title = "Estimation for Unsolved Homicides",
+    x = "Weeks",
+    ####################################################################
+    y = "............."
+  )
 ```
 
 ###Problem 2
@@ -102,9 +108,9 @@ estimation_for_city %>%
   ggplot(aes(x = city_state, y = unarrested/total_number)) +
   geom_point(size = 4, shape = 21, fill="white") +
   geom_errorbar(aes(x = city_state, ymin = conf.low, ymax = conf.high)) +
-  theme(text = element_text(size = 6), axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  theme(text = element_text(size = 6), axis.text.x = element_text(angle = 60, hjust = 1)) + 
   labs(
-    title = ";Estimation for Unsolved Homicides",
+    title = "Estimation for Unsolved Homicides",
     x = "City State",
     y = "Estimation of unsolved homicides"
   )
