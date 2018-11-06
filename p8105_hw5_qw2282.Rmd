@@ -13,7 +13,7 @@ library(tidyverse)
 
 ###Problem 1
 
-```{r}
+```{r message = FALSE}
 data_longitudinal = data_frame(filename = list.files("./data")) %>%
   filter(!filename == "homicide-data.csv") %>% 
   mutate(file_contents = map(filename, ~read_csv(file.path("./data", . )))) %>% 
@@ -33,10 +33,9 @@ ggplot(data_longitudinal, aes(x = week, y = number, group = (group:subject), col
   geom_point() +
   geom_line() +
   labs(
-    title = "Estimation for Unsolved Homicides",
+    title = "Observation of Longitudinal Studies",
     x = "Weeks",
-    ####################################################################
-    y = "............."
+    y = "Observations"
   )
 ```
 
@@ -105,10 +104,12 @@ Make the plot
 
 estimation_for_city %>% 
   mutate(city_state = forcats::fct_reorder(factor(city_state), unarrested/total_number)) %>% 
-  ggplot(aes(x = city_state, y = unarrested/total_number)) +
-  geom_point(size = 4, shape = 21, fill="white") +
+  #ggplot(aes(x = city_state, y = unarrested/total_number)) +
+ggplot(aes(x = city_state, y = unarrested/total_number)) +
+ # geom_point(size = 4, shape = 21, fill="white") +
+  geom_bar(stat="identity") +
   geom_errorbar(aes(x = city_state, ymin = conf.low, ymax = conf.high)) +
-  theme(text = element_text(size = 6), axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  theme(text = element_text(size = 8), axis.text.x = element_text(angle = 60, hjust = 1)) + 
   labs(
     title = "Estimation for Unsolved Homicides",
     x = "City State",
